@@ -6,18 +6,31 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState("3");
   const apikey = "44294638-58512edcffe42892d413550b1";
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     fetch(
-      `https://pixabay.com/api/?key=${apikey}&q=&image_type=photo&per_page=50`
+      `https://pixabay.com/api/?key=${apikey}&q=&image_type=photo&per_page=20&page=${page}`
     )
       .then((res) => res.json())
       .then((data) => {
-        setImages(data.hits);
+        setImages((prev):any => [...prev , ...data.hits]);
         setIsLoading(false);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [page]);
+
+  const handleScroll = () => {
+    if(window.innerHeight + document.documentElement.scrollTop + 1 >= document.documentElement.scrollHeight){
+      setPage(prev => prev+1)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("scroll",handleScroll)
+
+    return () => window.removeEventListener("scroll",handleScroll)
+  },[])
 
   return (
     <>
